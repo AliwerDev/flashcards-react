@@ -4,7 +4,7 @@ import { Navigate, Outlet } from "react-router-dom";
 
 import { AuthGuard } from "src/auth/guard";
 import { SplashScreen } from "src/components/shared/loading-screen";
-import { storageKey } from "src/config-global";
+// import { storageKey } from "src/config-global";
 
 // ----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ const MainPage = lazy(() => import("src/pages/dashboard/main/page"));
 
 // ----------------------------------------------------------------------
 
-const lastOpenedPath = localStorage.getItem(storageKey.LAST_PATH);
+// const lastOpenedPath = localStorage.getItem(storageKey.LAST_PATH);
 
 export const dashboardRoutes = [
   {
@@ -38,7 +38,7 @@ export const dashboardRoutes = [
     children: [
       {
         index: true,
-        element: <Navigate to={lastOpenedPath ? lastOpenedPath : "analytics"} />,
+        element: <Navigate to={"analytics"} />,
       },
       {
         path: "profile",
