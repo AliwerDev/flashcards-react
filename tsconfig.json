@@ -23,7 +23,6 @@
   "exclude": ["node_modules"],
   "include": ["**/*.ts", "**/*.tsx", "src/**/*"],
   "references": [
-    "tailwind.config.js",
     {
       "path": "./tsconfig.node.json"
     }
