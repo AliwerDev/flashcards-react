@@ -7,6 +7,7 @@ import { useBoolean } from "src/hooks/use-boolean";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { LoginDataType } from "src/auth/types";
+import GoogleLogo from "src/assets/icons/ic_google.svg";
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -89,7 +90,7 @@ export default function LoginPage() {
         {t("or")}
       </Divider>
 
-      <Button size="large" onClick={() => loginWithgoogle()} type="dashed" icon={<img src="/assets/icons/ic_google.svg" width="20px" height="20px" alt="google" />} className="w-full !bg-white dark:!bg-inherit mb-2">
+      <Button size="large" onClick={() => loginWithgoogle()} type="dashed" icon={<img src={GoogleLogo} width="20px" height="20px" alt="google" />} className="w-full !bg-white dark:!bg-inherit mb-2">
         {t("Continue with Google")}
       </Button>
     </>

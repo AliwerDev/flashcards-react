@@ -1,4 +1,16 @@
 import styled from "@emotion/styled";
+import { keyframes } from "@emotion/react";
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+`;
 
 export const FlipCardStyled = styled.div`
   height: 100%;
@@ -12,6 +24,8 @@ export const FlipCardStyled = styled.div`
     position: relative;
     z-index: 15;
     width: 100%;
+
+    animation: ${fadeIn} 0.5s ease-in-out;
 
     .card-content {
       max-width: 700px;

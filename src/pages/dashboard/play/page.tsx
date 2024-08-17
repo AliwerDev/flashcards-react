@@ -17,13 +17,13 @@ import { removeParentheses } from "src/auth/context/utils";
 import { motion } from "framer-motion";
 import useChangeableSpeech from "src/hooks/use-speach";
 import { FlipCardStyled } from "./styled";
-import FireFlies from "src/components/animations/firefly";
 import { LiaExchangeAltSolid } from "react-icons/lia";
 import Confetti from "react-confetti";
 import useConfetti from "src/hooks/use-confetti";
 import { paths } from "src/routes/paths";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
+import finishImage from "src/assets/vectors/finished.png";
 
 const container = {
   hidden: { opacity: 1, scale: 0 },
@@ -41,14 +41,6 @@ const item = {
   hidden: { y: 20, opacity: 0 },
   visible: {
     y: 0,
-    opacity: 1,
-  },
-};
-
-const itemScalable = {
-  hidden: { scale: 0, opacity: 0 },
-  visible: {
-    scale: 1,
     opacity: 1,
   },
 };
@@ -208,13 +200,13 @@ const PlayPage = () => {
                   </Button>
                 </div>
               }
-              image="/assets/vectors/finished.png"
+              image={finishImage}
               imageStyle={{ height: "300px", display: "flex", justifyContent: "center" }}
               rootClassName="mt-2"
             />
           ) : (
             <motion.div initial="hidden" animate="visible" variants={container}>
-              <motion.div className="card cursor-pointer mx-auto" variants={itemScalable} key={activeCard?._id}>
+              <div className="card cursor-pointer mx-auto" key={activeCard?._id}>
                 <div onClick={showBool.onToggle} style={style} className={`card-content shadow-md ${showBool.value ? "show" : ""}`}>
                   <div className="card-front">
                     {absoluteActions}
@@ -226,7 +218,7 @@ const PlayPage = () => {
                     <Typography.Title level={5}>{reverceRenderBool.value ? activeCard?.front : activeCard?.back}</Typography.Title>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
               <Flex gap="15px" className="actions" wrap>
                 <motion.div className="flex-1" variants={item}>
@@ -244,7 +236,6 @@ const PlayPage = () => {
             </motion.div>
           )}
           <AddEditCardModal categoryId={categoryId} openBool={editModalBool} t={t} inPlayPage />
-          {!fullScreenHandle.active ? <FireFlies /> : null}
         </FlipCardStyled>
       </FullScreen>
       {isPlaying && <Confetti />}
