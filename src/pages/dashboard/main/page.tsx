@@ -79,16 +79,17 @@ const Page = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       message.success(t("successfully_deleted"));
-      navigate(paths.dashboard.root);
+
+      localStorage.setItem("lastpath", paths.dashboard.analytics);
+      navigate(paths.dashboard.analytics);
     },
     onError: () => "",
   });
 
   useEffect(() => {
-    console.log(isError);
-
     if (isError) {
-      navigate(paths.dashboard.root);
+      localStorage.setItem("lastpath", paths.dashboard.analytics);
+      navigate(paths.dashboard.analytics);
     }
   }, [isError]);
 

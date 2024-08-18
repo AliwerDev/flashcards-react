@@ -36,7 +36,8 @@ const CardsPage = () => {
 
   useEffect(() => {
     if (isError) {
-      navigate(paths.dashboard.root);
+      localStorage.setItem("lastpath", paths.dashboard.analytics);
+      navigate(paths.dashboard.analytics);
     }
   }, [isError]);
 
