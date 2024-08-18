@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy, Suspense } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 import { AuthGuard } from "src/auth/guard";
 import { SplashScreen } from "src/components/shared/loading-screen";
@@ -12,6 +12,7 @@ import { SplashScreen } from "src/components/shared/loading-screen";
 const DashboardLayout = lazy(() => import("src/layouts/dashboard/layout"));
 
 // PAGES
+const IndexPage = lazy(() => import("src/pages/dashboard/page"));
 const ProfilePage = lazy(() => import("src/pages/dashboard/profile/page"));
 const AnalyticsPage = lazy(() => import("src/pages/dashboard/analytics/page"));
 const UsersPage = lazy(() => import("src/pages/dashboard/users/page"));
@@ -38,7 +39,7 @@ export const dashboardRoutes = [
     children: [
       {
         index: true,
-        element: <Navigate to={"analytics"} />,
+        element: <IndexPage />,
       },
       {
         path: "profile",

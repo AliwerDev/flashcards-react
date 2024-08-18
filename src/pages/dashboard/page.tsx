@@ -4,13 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import get from "lodash.get";
+import { storageKey } from "src/config-global";
 
 const Page = () => {
   const navigate = useNavigate();
   const { data: categories } = useQuery({ queryKey: ["categories"], queryFn: () => axiosInstance.get(endpoints.category.list) });
 
   useEffect(() => {
-    const path = localStorage.getItem("lastpath");
+    const path = localStorage.getItem(storageKey.LAST_PATH);
     if (path) {
       navigate(path);
     } else if (get(categories, "data.length") > 0) {
