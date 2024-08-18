@@ -7,16 +7,18 @@ import axiosInstance, { endpoints } from "src/utils/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Col, Input, List, Row, Segmented, Select, theme } from "antd";
 import debounce from "lodash.debounce";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { LuPencil, LuSearch } from "react-icons/lu";
 import styled from "@emotion/styled";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import get from "lodash.get";
 import { useTranslation } from "react-i18next";
+import { paths } from "src/routes/paths";
 
 const CardsPage = () => {
   const { t } = useTranslation();
   const params = useParams();
+  const navigate = useNavigate();
   const categoryId = get(params, "categoryId") as string;
   const editCardBool = useBoolean();
   const filter = useFilter({ search: "", boxId: "ALL", status: "ALL" });
@@ -24,14 +26,19 @@ const CardsPage = () => {
     token: { colorBgContainer, borderRadius },
   } = theme.useToken();
 
-  const { data } = useQuery({ queryKey: ["boxes", categoryId], queryFn: () => axiosInstance.get(endpoints.box.list(categoryId)) });
-  const boxes: IBox[] = data?.data || [];
-
-  const { data: cardData, isLoading: isLoadingCards } = useQuery({ queryKey: ["cards", categoryId], queryFn: () => axiosInstance.get(endpoints.card.list + `?categoryId=${categoryId}`) });
-
+  const { data: cardData, isLoading: isLoadingCards, isError } = useQuery({ queryKey: ["cards", categoryId], queryFn: () => axiosInstance.get(endpoints.card.list + `?categoryId=${categoryId}`) });
   const filteredCards: ICard[] = useMemo(() => {
     return filterFunction(cardData?.data, filter.value as Ifilter);
   }, [filter, cardData]);
+
+  const { data } = useQuery({ queryKey: ["boxes", categoryId], queryFn: () => axiosInstance.get(endpoints.box.list(categoryId)), enabled: !isLoadingCards && !isError });
+  const boxes: IBox[] = data?.data || [];
+
+  useEffect(() => {
+    if (isError) {
+      navigate(paths.dashboard.root);
+    }
+  }, [isError]);
 
   return (
     <Styled>

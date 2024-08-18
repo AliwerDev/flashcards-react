@@ -1,0 +1,34 @@
+{
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "favicon/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "favicon/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "favicon/favicon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    { "purpose": "maskable", "sizes": "512x512", "src": "favicon/icon512_maskable.png", "type": "image/png" },
+    { "purpose": "any", "sizes": "512x512", "src": "favicon/icon512_rounded.png", "type": "image/png" }
+  ],
+  "orientation": "any",
+  "display": "standalone",
+  "dir": "auto",
+  "lang": "en-UZ",
+  "name": "Laitner Flashcards",
+  "start_url": "https://flashcards.uz",
+  "scope": "https://flashcards.uz/dashboard",
+  "description": "Laitner tizimi orqali so'z boyligingizni oshiring! Ushbu veb-sayt, ingliz tilini o'rganuvchilar uchun maxsus ishlab chiqilgan bo'lib, turli mavzulardagi so'zlar yordamida lug'atingizni kengaytirish imkonini beradi. Foydalanuvchi do'stligi va samarali o'rganish metodlari bilan jihozlangan bu platforma, har qanday qurilmada osongina ishlatilishi mumkin. Endi so'z boyligingizni kengaytirish va yangi so'zlarni tez va samarali o'rganish uchun Laitner tizimidan foydalaning!"
+}

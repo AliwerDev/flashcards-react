@@ -19,6 +19,7 @@ import AddEditCategoryModal from "src/components/dashboard/add-category-modal";
 import get from "lodash.get";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 const { Text, Title } = Typography;
 
@@ -53,9 +54,9 @@ const Page = () => {
   const editCategoryBool = useBoolean();
   const createEditCardBool = useBoolean();
 
-  const { data, isLoading: isFetchingBoxes } = useQuery({ queryKey: ["boxes-with-count", categoryId], queryFn: () => axiosInstance.get(endpoints.box.listWithCardCount(categoryId)) });
-  const { data: activeCardsData } = useQuery({ queryKey: ["active-cards", categoryId], queryFn: () => axiosInstance.get(endpoints.card.getActive(categoryId)) });
-  const { data: category } = useQuery({ queryKey: ["categories", categoryId], queryFn: () => axiosInstance.get(endpoints.category.getOne(categoryId)) });
+  const { data, isLoading: isFetchingBoxes, isError } = useQuery({ queryKey: ["boxes-with-count", categoryId], queryFn: () => axiosInstance.get(endpoints.box.listWithCardCount(categoryId)) });
+  const { data: activeCardsData } = useQuery({ queryKey: ["active-cards", categoryId], queryFn: () => axiosInstance.get(endpoints.card.getActive(categoryId)), enabled: !isFetchingBoxes && !isError });
+  const { data: category } = useQuery({ queryKey: ["categories", categoryId], queryFn: () => axiosInstance.get(endpoints.category.getOne(categoryId)), enabled: !isFetchingBoxes && !isError });
 
   const boxes: IBox[] = data?.data || [];
   const active_cards: ICard[] = activeCardsData?.data || [];
@@ -82,6 +83,14 @@ const Page = () => {
     },
     onError: () => "",
   });
+
+  useEffect(() => {
+    console.log(isError);
+
+    if (isError) {
+      navigate(paths.dashboard.root);
+    }
+  }, [isError]);
 
   const startButton = (
     <Button onClick={() => navigate(paths.dashboard.play(categoryId))} disabled={active_cards.length <= 0} className="w-full" size="large" type="primary" icon={<LuPlay />}>

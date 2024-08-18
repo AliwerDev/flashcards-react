@@ -22,7 +22,7 @@ import Confetti from "react-confetti";
 import useConfetti from "src/hooks/use-confetti";
 import { paths } from "src/routes/paths";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import finishImage from "src/assets/vectors/finished.png";
 
 const container = {
@@ -46,6 +46,7 @@ const item = {
 };
 
 const PlayPage = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const fullScreenHandle = useFullScreenHandle();
@@ -64,8 +65,8 @@ const PlayPage = () => {
   const editModalBool = useBoolean();
   const { startConfetti, isPlaying } = useConfetti();
 
-  const { data: active_cards_data, isLoading } = useQuery({ queryKey: ["active-cards", categoryId], queryFn: () => axiosInstance.get(endpoints.card.getActive(categoryId)) });
-  const { data: boxes_data } = useQuery({ queryKey: ["boxes", categoryId], queryFn: () => axiosInstance.get(endpoints.box.list(categoryId)) });
+  const { data: active_cards_data, isLoading, isError } = useQuery({ queryKey: ["active-cards", categoryId], queryFn: () => axiosInstance.get(endpoints.card.getActive(categoryId)) });
+  const { data: boxes_data } = useQuery({ queryKey: ["boxes", categoryId], queryFn: () => axiosInstance.get(endpoints.box.list(categoryId)), enabled: !isLoading && !isError });
   const active_cards: ICard[] = active_cards_data?.data || [];
   const boxesObject = makeBoxesObject(boxes_data?.data);
 
@@ -125,6 +126,12 @@ const PlayPage = () => {
 
   const { token } = theme.useToken();
   const style = { background: token.colorBgContainer, borderRadius: token.borderRadius, border: "1px solid", borderColor: token.colorBorder };
+
+  useEffect(() => {
+    if (isError) {
+      navigate(paths.dashboard.root);
+    }
+  }, [isError]);
 
   useEffect(() => {
     if (active_cards.length > 0) {
