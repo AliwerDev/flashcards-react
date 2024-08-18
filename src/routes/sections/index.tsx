@@ -9,7 +9,6 @@ import { dashboardRoutes } from "./dashboard";
 // ----------------------------------------------------------------------
 
 export default function Router() {
-  console.log(PATH_AFTER_LOGIN);
   return useRoutes([
     {
       path: "/",
