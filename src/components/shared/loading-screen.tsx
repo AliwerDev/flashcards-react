@@ -1,4 +1,4 @@
-import { Image, theme } from "antd";
+import { Image } from "antd";
 import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 import logo from "src/assets/logo/flashcards.svg";
@@ -71,11 +71,8 @@ const Styled = styled.div`
 `;
 
 export const SplashScreen = () => {
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
   return (
-    <Styled style={{ backgroundColor: colorBgContainer }}>
+    <Styled>
       <div className="logo">
         <div className="logo-cards">
           <img src={logoCard} className="logo-cards-item" />

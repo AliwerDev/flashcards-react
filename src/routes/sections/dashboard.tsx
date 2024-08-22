@@ -1,8 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { Outlet } from "react-router-dom";
 
 import { AuthGuard } from "src/auth/guard";
+import { SplashScreen } from "src/components/shared/loading-screen";
 // import { storageKey } from "src/config-global";
 
 // ----------------------------------------------------------------------
@@ -27,11 +28,13 @@ export const dashboardRoutes = [
   {
     path: "dashboard",
     element: (
-      <AuthGuard>
-        <DashboardLayout>
-          <Outlet />
-        </DashboardLayout>
-      </AuthGuard>
+      <Suspense fallback={<SplashScreen />}>
+        <AuthGuard>
+          <DashboardLayout>
+            <Outlet />
+          </DashboardLayout>
+        </AuthGuard>
+      </Suspense>
     ),
     children: [
       {
