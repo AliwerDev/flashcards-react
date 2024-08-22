@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 // ----------------------------------------------------------------------
 
 const NotFoundPage = lazy(() => import("src/pages/404"));
+const TestPage = lazy(() => import("src/pages/test"));
 
 // ----------------------------------------------------------------------
 
@@ -15,6 +16,10 @@ export const mainRoutes = [
       {
         path: "404",
         element: <NotFoundPage />,
+      },
+      {
+        path: "test",
+        element: <TestPage />,
       },
     ],
   },

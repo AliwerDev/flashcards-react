@@ -14,6 +14,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import get from "lodash.get";
 import { useTranslation } from "react-i18next";
 import { paths } from "src/routes/paths";
+import SimpleBar from "simplebar-react";
 
 const CardsPage = () => {
   const { t } = useTranslation();
@@ -43,46 +44,48 @@ const CardsPage = () => {
 
   return (
     <Styled>
-      <div className="card-list-header p-1 xl:p-3" style={{ backgroundColor: colorBgContainer, borderRadius }}>
-        <Row gutter={[10, 10]}>
-          <Col xs={24} md={8}>
-            <Input className="md:max-w-60" onChange={debounce((e) => filter.changeFilter("search", e.target.value), 300)} prefix={<LuSearch />} placeholder={t("Search")} size="large" />
-          </Col>
-          <Col xs={24} md={8}>
-            <Segmented
-              block
-              onChange={(value) => filter.changeFilter("status", value)}
-              size="large"
-              options={[
-                { label: t("All"), value: "ALL" },
-                { label: t("Learned"), value: "LEARNED" },
-              ]}
-            />
-          </Col>
-          <Col xs={24} md={8}>
-            <Select className="md:max-w-60 ml-auto block" onChange={(value) => filter.changeFilter("boxId", value)} defaultValue="ALL" size="large">
-              <Select.Option value={"ALL"}>{t("All")}</Select.Option>
-              {boxes.map((box, index) => (
-                <Select.Option key={box._id} value={box._id}>
-                  {index + 1} - {t("level")}
-                </Select.Option>
-              ))}
-            </Select>
-          </Col>
-        </Row>
-      </div>
+      <SimpleBar style={{ maxHeight: "100%" }}>
+        <div className="card-list-header p-1 xl:p-3" style={{ backgroundColor: colorBgContainer, borderRadius }}>
+          <Row gutter={[10, 10]}>
+            <Col xs={24} md={8}>
+              <Input className="md:max-w-60" onChange={debounce((e) => filter.changeFilter("search", e.target.value), 300)} prefix={<LuSearch />} placeholder={t("Search")} size="large" />
+            </Col>
+            <Col xs={24} md={8}>
+              <Segmented
+                block
+                onChange={(value) => filter.changeFilter("status", value)}
+                size="large"
+                options={[
+                  { label: t("All"), value: "ALL" },
+                  { label: t("Learned"), value: "LEARNED" },
+                ]}
+              />
+            </Col>
+            <Col xs={24} md={8}>
+              <Select className="md:max-w-60 ml-auto block" onChange={(value) => filter.changeFilter("boxId", value)} defaultValue="ALL" size="large">
+                <Select.Option value={"ALL"}>{t("All")}</Select.Option>
+                {boxes.map((box, index) => (
+                  <Select.Option key={box._id} value={box._id}>
+                    {index + 1} - {t("level")}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Col>
+          </Row>
+        </div>
 
-      <List
-        style={{ backgroundColor: colorBgContainer }}
-        bordered
-        loading={isLoadingCards}
-        dataSource={filteredCards}
-        renderItem={(item, i) => (
-          <List.Item actions={[<Button onClick={() => editCardBool.onTrue(item)} type="text" icon={<LuPencil />} />]}>
-            {i + 1}. {item.front}
-          </List.Item>
-        )}
-      />
+        <List
+          style={{ backgroundColor: colorBgContainer }}
+          bordered
+          loading={isLoadingCards}
+          dataSource={filteredCards}
+          renderItem={(item, i) => (
+            <List.Item actions={[<Button onClick={() => editCardBool.onTrue(item)} type="text" icon={<LuPencil />} />]}>
+              {i + 1}. {item.front}
+            </List.Item>
+          )}
+        />
+      </SimpleBar>
 
       <AddEditCardModal categoryId={categoryId} {...{ boxes, t }} openBool={editCardBool} />
     </Styled>
@@ -90,9 +93,12 @@ const CardsPage = () => {
 };
 
 const Styled = styled.div`
+  height: 100%;
+
   .card-list-header {
     margin-bottom: 10px;
     position: sticky;
+    z-index: 2;
     top: 0;
   }
 

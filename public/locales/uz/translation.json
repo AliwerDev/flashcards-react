@@ -74,5 +74,13 @@
   "Add card": "Karta qo'shing",
   "start-learning": "Boshlash",
   "main": "Asosiy",
-  "cards": "Kartalar"
+  "cards": "Kartalar",
+  "show-answer": "Javobni ko'rsatish",
+  "connect-telegram-accaunt": "Telegram akkauntini ulash",
+  "telegram-accaunts": "Telegram akkauntlari",
+  "monthly": "Oylik",
+  "new-cards-count": "Yangi kartalar soni",
+  "new-cards": "Yangi kartalar",
+  "weekly": "Haftalik",
+  "yearly": "Yillik"
 }

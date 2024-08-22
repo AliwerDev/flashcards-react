@@ -1,59 +1,39 @@
 import { ICard } from "src/types/card";
 import axiosInstance, { endpoints } from "src/utils/axios";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Empty, Flex, Space, Spin, theme, Typography } from "antd";
+import { Button, Empty, Flex, Progress, Space, Spin, theme, Typography } from "antd";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useBoolean } from "src/hooks/use-boolean";
 import { GoThumbsdown, GoThumbsup } from "react-icons/go";
 import { LuMoveLeft, LuPencil } from "react-icons/lu";
 import AddEditCardModal from "src/components/dashboard/add-edit-card-modal";
-import { MdFullscreen, MdFullscreenExit, MdOutlineAdsClick } from "react-icons/md";
-import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import { useSettingsContext } from "src/settings/hooks";
 import { IBox } from "src/types/box";
 import get from "lodash.get";
 import { HiSpeakerWave } from "react-icons/hi2";
 import { removeParentheses } from "src/auth/context/utils";
-import { motion } from "framer-motion";
 import useChangeableSpeech from "src/hooks/use-speach";
 import { FlipCardStyled } from "./styled";
 import { LiaExchangeAltSolid } from "react-icons/lia";
+import { BiShowAlt } from "react-icons/bi";
 import Confetti from "react-confetti";
 import useConfetti from "src/hooks/use-confetti";
 import { paths } from "src/routes/paths";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import finishImage from "src/assets/vectors/finished.png";
-
-const container = {
-  hidden: { opacity: 1, scale: 0 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      delayChildren: 0.3,
-      staggerChildren: 0.2,
-    },
-  },
-};
-
-const item = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-  },
-};
+import ICategory from "src/types/category";
 
 const PlayPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const fullScreenHandle = useFullScreenHandle();
   const { theme: clientTheme } = useSettingsContext();
   const speacher = useChangeableSpeech();
   const params = useParams();
   const categoryId = params.categoryId as string;
+  const isAll = categoryId === "ALL";
+  const playedCount = useRef({ played: 0, count: 1 });
 
   const speachButtonRef = useRef<HTMLButtonElement>(null);
   const icBottonRef = useRef<HTMLButtonElement>(null);
@@ -66,22 +46,26 @@ const PlayPage = () => {
   const { startConfetti, isPlaying } = useConfetti();
 
   const { data: active_cards_data, isLoading, isError } = useQuery({ queryKey: ["active-cards", categoryId], queryFn: () => axiosInstance.get(endpoints.card.getActive(categoryId)) });
-  const { data: boxes_data } = useQuery({ queryKey: ["boxes", categoryId], queryFn: () => axiosInstance.get(endpoints.box.list(categoryId)), enabled: !isLoading && !isError });
+  const { data: boxesData } = useQuery({ queryKey: ["boxes", categoryId], queryFn: () => axiosInstance.get(endpoints.box.list(categoryId)), enabled: !isLoading && !isError && !isAll });
+  const { data: categoriesData } = useQuery({ queryKey: ["categories"], queryFn: () => axiosInstance.get(endpoints.category.list) });
+
   const active_cards: ICard[] = active_cards_data?.data || [];
-  const boxesObject = makeBoxesObject(boxes_data?.data);
+  const infoObject = makeInfoObject(isAll ? categoriesData?.data : boxesData?.data);
 
   const playCard = useCallback(
-    (isCorrect: boolean) => {
+    (isCorrect: boolean, cId?: string) => {
       try {
-        axiosInstance.post(endpoints.card.play(categoryId), { cardId: activeCard?._id, correct: isCorrect });
+        axiosInstance.post(endpoints.card.play(cId || categoryId), { cardId: activeCard?._id, correct: isCorrect });
       } catch (error) {
         console.error(error);
       }
 
-      queryClient.setQueryData(["active-cards", categoryId], (oldData: any) => {
+      queryClient.setQueryData(["active-cards", cId ? "ALL" : categoryId], (oldData: any) => {
         const changed_active_cards = [...oldData.data];
 
         if (isCorrect) {
+          if (playedCount.current.count === 1) playedCount.current.count = changed_active_cards.length || 1;
+          playedCount.current.played++;
           changed_active_cards.shift();
         } else {
           const playedCard = changed_active_cards.shift();
@@ -95,9 +79,7 @@ const PlayPage = () => {
         } else {
           startConfetti();
         }
-
         showBool.onFalse();
-
         return { ...oldData, data: changed_active_cards };
       });
     },
@@ -109,23 +91,18 @@ const PlayPage = () => {
     editModalBool.onTrue(activeCard);
   };
 
-  const toggleFullScreen = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    fullScreenHandle.active ? fullScreenHandle.exit() : fullScreenHandle.enter();
-  };
-
   const toggleReverce = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     reverceRenderBool.onToggle();
   };
 
-  const handlePlay = (e: any) => {
+  const handleSpeach = (e: any) => {
     e.stopPropagation();
     speacher.start();
   };
 
   const { token } = theme.useToken();
-  const style = { background: token.colorBgContainer, borderRadius: token.borderRadius, border: "1px solid", borderColor: token.colorBorder };
+  const style = { background: token.colorBgContainer };
 
   useEffect(() => {
     if (isError) {
@@ -168,90 +145,92 @@ const PlayPage = () => {
     };
   }, [editModalBool.value]);
 
-  const absoluteActions = (
-    <>
-      <Space className="message" align="center">
-        <MdOutlineAdsClick color={token.colorTextSecondary} />
-        <Typography.Text className="text-xs" type="secondary">
-          {t("click-to-show-other-side")}, <span className="desctop-element">{t("or-just-press-keys")}</span>
-        </Typography.Text>
-      </Space>
+  useEffect(() => {
+    playedCount.current = { played: 0, count: 1 };
+  }, [categoryId]);
 
-      <Space className="edit-button">
-        <Typography.Text className="text-sm" type="secondary">
-          {t("Level")}: {get(boxesObject, `[${activeCard?.boxId}].level`)}
-        </Typography.Text>
-        {!fullScreenHandle.active && <Button size="small" onClick={clickEditButton} type="dashed" icon={<LuPencil />} />}
-        <Button size="small" onClick={toggleFullScreen} type="dashed" icon={fullScreenHandle.active ? <MdFullscreenExit /> : <MdFullscreen />} />
+  const absoluteActions = (
+    <div className="edit-button">
+      <Typography.Text className="text-sm" type="secondary">
+        {isAll ? (
+          get(infoObject, `[${activeCard?.categoryId}].title`)
+        ) : (
+          <>
+            {t("Level")}: {get(infoObject, `[${activeCard?.boxId}].level`)}
+          </>
+        )}
+      </Typography.Text>
+      <Space>
+        <Button size="small" onClick={clickEditButton} type="dashed" icon={<LuPencil />} />
         <Button size="small" onClick={toggleReverce} type={reverceRenderBool.value ? "primary" : "dashed"} icon={<LiaExchangeAltSolid />} />
       </Space>
-
-      {activeCard && <Button ref={speachButtonRef} className="play-button" onClick={handlePlay} type="dashed" icon={<HiSpeakerWave />} />}
-    </>
+    </div>
   );
+
+  const cardelements = <>{activeCard && <Button ref={speachButtonRef} className="play-button" onClick={handleSpeach} type="dashed" icon={<HiSpeakerWave />} />}</>;
 
   return (
     <>
-      <FullScreen handle={fullScreenHandle}>
-        <FlipCardStyled style={{ background: clientTheme === "dark" ? token.colorBgBase : "#e9ece5" }}>
-          {isLoading ? (
-            <div className="h-[300px] grid place-items-center">
-              <Spin />
-            </div>
-          ) : active_cards.length <= 0 ? (
-            <Empty
-              description={
-                <div className="flex flex-col items-center">
-                  <Typography.Text type="secondary">{t("you-have-completed-all-active-cards")}</Typography.Text>
-                  <Button href={paths.dashboard.main(categoryId)} icon={<LuMoveLeft />} type="link">
-                    {t("back-to-home")}
-                  </Button>
-                </div>
-              }
-              image={finishImage}
-              imageStyle={{ height: "300px", display: "flex", justifyContent: "center" }}
-              rootClassName="mt-2"
-            />
-          ) : (
-            <motion.div initial="hidden" animate="visible" variants={container}>
-              <div className="card cursor-pointer mx-auto" key={activeCard?._id}>
-                <div onClick={showBool.onToggle} style={style} className={`card-content shadow-md ${showBool.value ? "show" : ""}`}>
-                  <div className="card-front">
-                    {absoluteActions}
-                    <Typography.Title level={5}>{reverceRenderBool.value ? activeCard?.back : activeCard?.front}</Typography.Title>
-                  </div>
+      <FlipCardStyled style={{ background: clientTheme === "dark" ? token.colorBgBase : "#e9ece5" }}>
+        {isLoading ? (
+          <div className="h-[300px] grid place-items-center">
+            <Spin />
+          </div>
+        ) : active_cards.length <= 0 ? (
+          <Empty
+            description={
+              <div className="flex flex-col items-center">
+                <Typography.Text type="secondary">{t("you-have-completed-all-active-cards")}</Typography.Text>
+                <Button href={paths.dashboard.main(categoryId)} icon={<LuMoveLeft />} type="link">
+                  {t("back-to-home")}
+                </Button>
+              </div>
+            }
+            image={finishImage}
+            imageStyle={{ height: "300px", display: "flex", justifyContent: "center" }}
+            rootClassName="mt-2"
+          />
+        ) : (
+          <>
+            <Progress strokeWidth={15} strokeColor={token.colorSuccess} className="progress" percent={(playedCount.current.played / playedCount.current.count) * 100} status="active" showInfo={false} />
 
-                  <div className="card-back">
-                    {absoluteActions}
-                    <Typography.Title level={5}>{reverceRenderBool.value ? activeCard?.front : activeCard?.back}</Typography.Title>
-                  </div>
+            <div className="card cursor-pointer mx-auto">
+              {absoluteActions}
+              <div onClick={showBool.onToggle} style={style} key={activeCard?._id} className={`card-content shadow-md ${showBool.value ? "show" : ""}`}>
+                <div className="card-front">
+                  {cardelements}
+                  <Typography.Title level={5}>{reverceRenderBool.value ? activeCard?.back : activeCard?.front}</Typography.Title>
+                </div>
+
+                <div className="card-back">
+                  {cardelements}
+                  <Typography.Title level={5}>{reverceRenderBool.value ? activeCard?.front : activeCard?.back}</Typography.Title>
                 </div>
               </div>
+            </div>
 
-              <Flex gap="15px" className="actions" wrap>
-                <motion.div className="flex-1" variants={item}>
-                  <Button ref={icBottonRef} onClick={() => playCard(false)} danger size="large" type="dashed" icon={<GoThumbsdown />} />
-                </motion.div>
-                <motion.div className="flex-1" variants={item}>
-                  <Button ref={cBottonRef} onClick={() => playCard(true)} size="large" type="dashed" icon={<GoThumbsup />} />
-                </motion.div>
-                <motion.div variants={item} className="w-full text-center">
-                  <Typography.Text type="secondary" className="desctop-element text-xs">
-                    {t("or-just-press-keys-0")}
-                  </Typography.Text>
-                </motion.div>
-              </Flex>
-            </motion.div>
-          )}
-          <AddEditCardModal categoryId={categoryId} openBool={editModalBool} t={t} inPlayPage />
-        </FlipCardStyled>
-      </FullScreen>
+            <Flex gap="15px" className="actions" wrap>
+              {showBool.value ? (
+                <>
+                  <Button className="flex-1" key={showBool.value ? "hide" : "show"} ref={icBottonRef} onClick={() => playCard(false, isAll ? activeCard?.categoryId : "")} danger size="large" icon={<GoThumbsdown />} />
+                  <Button className="flex-1" key={showBool.value ? "hide" : "show"} ref={cBottonRef} onClick={() => playCard(true, isAll ? activeCard?.categoryId : "")} size="large" icon={<GoThumbsup />} />
+                </>
+              ) : (
+                <Button className="flex-1" onClick={showBool.onTrue} type="primary" size="large" icon={<BiShowAlt />}>
+                  {t("show-answer")}
+                </Button>
+              )}
+            </Flex>
+          </>
+        )}
+        <AddEditCardModal categoryId={categoryId} openBool={editModalBool} t={t} inPlayPage />
+      </FlipCardStyled>
       {isPlaying && <Confetti />}
     </>
   );
 };
 
-const makeBoxesObject = (list: IBox[] = []) => {
+const makeInfoObject = (list: IBox[] | ICategory[] = []) => {
   const obj: any = {};
   list.forEach((item, index) => {
     obj[item._id] = { ...item, level: index + 1 };

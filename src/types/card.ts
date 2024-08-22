@@ -4,6 +4,7 @@ export interface ICard {
   front: string;
   back: string;
   boxId: string;
+  categoryId: string;
   createdAt: string;
   updatedAt: string;
 }

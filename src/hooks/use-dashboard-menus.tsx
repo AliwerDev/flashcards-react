@@ -23,6 +23,11 @@ export const useDashboardMenus = () => {
     () => [
       [
         {
+          key: "ALL/play",
+          icon: <LuPlay />,
+          label: t("Start"),
+        },
+        {
           key: "analytics",
           icon: <TbDeviceDesktopAnalytics />,
           label: t("Analitics"),

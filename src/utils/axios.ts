@@ -75,4 +75,9 @@ export const endpoints = {
     edit: (id: string) => `/category/${id}`,
     delete: (id: string) => `/category/${id}`,
   },
+  statistics: {
+    root: "/statistics",
+    reviews: "/statistics/reviews",
+    newCards: "/statistics/new-cards",
+  },
 };

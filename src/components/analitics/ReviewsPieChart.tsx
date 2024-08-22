@@ -1,29 +1,27 @@
-import { IReview } from "src/types/other";
-import React from "react";
 import { theme as antTheme, Card, Skeleton, Typography } from "antd";
 import { Tooltip, Pie, PieChart, Cell } from "recharts";
 import { TFunction } from "i18next";
 
 interface IProps {
-  reviews: IReview[];
+  data: any[];
   title?: string;
   t: TFunction;
   loading?: boolean;
 }
 
-export default function ReviewsPieChart({ reviews, title, t, loading }: IProps) {
+export default function ReviewsPieChart({ data = [], title, t, loading }: IProps) {
   const { token } = antTheme.useToken();
 
-  const correctReviews = reviews.filter((review) => review.correct).length;
-  const incorrectReviews = reviews.length - correctReviews;
+  const correctReviews = data.reduce((acc, val) => acc + val.correct, 0);
+  const incorrectReviews = data.reduce((acc, val) => acc + val.incorrect, 0);
 
-  const data = [
+  const values = [
     { name: t("correct-reviews"), value: correctReviews },
     { name: t("incorrect-reviews"), value: incorrectReviews },
   ];
 
   return (
-    <Card className="my-5" classNames={{ body: "!p-2" }}>
+    <Card classNames={{ body: "!p-2" }} className="h-full">
       <Typography.Title level={5} className="text-center mt-0 my-3">
         {title ? title : t("your-statistics")}
       </Typography.Title>
@@ -32,8 +30,8 @@ export default function ReviewsPieChart({ reviews, title, t, loading }: IProps) 
           <Skeleton active />
         ) : (
           <PieChart width={300} height={300}>
-            <Pie dataKey="value" data={data} cx="50%" cy="50%" outerRadius={100} label>
-              {data.map((_, index) => (
+            <Pie dataKey="value" data={values} cx="50%" cy="50%" outerRadius={100} label>
+              {values.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={index === 0 ? token.colorSuccess : token.colorError} />
               ))}
             </Pie>

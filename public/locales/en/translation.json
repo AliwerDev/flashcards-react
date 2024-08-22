@@ -76,5 +76,11 @@
   "main": "Main",
   "cards": "Cards",
   "connect-telegram-accaunt": "Connect Telegram accaunt",
-  "telegram-accaunts": "Telegram accaunts"
+  "telegram-accaunts": "Telegram accaunts",
+  "show-answer": "Show answer",
+  "weekly": "Weekly",
+  "monthly": "Monthly",
+  "yearly": "Yearly",
+  "new-cards-count": "New cards count",
+  "new-cards": "New Cards"
 }

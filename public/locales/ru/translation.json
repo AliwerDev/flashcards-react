@@ -74,5 +74,13 @@
   "Add card": "Добавить карту",
   "start-learning": "Начать обучение",
   "main": "Основной",
-  "cards": "Карты"
+  "cards": "Карты",
+  "show-answer": "Показать ответ",
+  "connect-telegram-accaunt": "Подключить Telegram-аккаунт",
+  "telegram-accaunts": "Telegram-аккаунты",
+  "monthly": "Ежемесячно",
+  "new-cards-count": "Количество новых карт",
+  "new-cards": "Новые карты",
+  "weekly": "Еженедельно",
+  "yearly": "Ежегодно"
 }

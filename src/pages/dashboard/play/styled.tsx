@@ -4,20 +4,21 @@ import { keyframes } from "@emotion/react";
 const fadeIn = keyframes`
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.95) translateY(20px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
   }
 `;
 
 export const FlipCardStyled = styled.div`
   height: 100%;
-  min-height: 90vh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow: hidden;
 
   .card {
     perspective: 1000px;
@@ -25,16 +26,15 @@ export const FlipCardStyled = styled.div`
     z-index: 15;
     width: 100%;
 
-    animation: ${fadeIn} 0.5s ease-in-out;
-
     .card-content {
-      max-width: 700px;
-      min-height: 300px;
+      max-width: 400px;
+      min-height: 450px;
       width: 100%;
       margin: 0 auto;
-      position: relative;
       transform-style: preserve-3d;
       transition: transform 1s;
+      animation: ${fadeIn} 0.3s ease-in-out;
+      border-radius: 10px;
 
       &.show {
         transform: rotateY(180deg);
@@ -58,9 +58,15 @@ export const FlipCardStyled = styled.div`
     }
 
     .edit-button {
+      width: 100%;
+      max-width: 400px;
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       gap: 10px;
     }
 
@@ -70,22 +76,13 @@ export const FlipCardStyled = styled.div`
       bottom: 10px;
     }
 
-    .message {
-      width: 100%;
-      position: absolute;
-      display: flex;
-      justify-content: center;
-      bottom: 10px;
-      left: 0;
-    }
-
     .card-back {
       transform: rotateY(180deg);
     }
   }
 
   .actions {
-    max-width: 700px;
+    max-width: 400px;
     width: 100%;
     margin: 0 auto;
     margin-top: 15px;
@@ -93,14 +90,24 @@ export const FlipCardStyled = styled.div`
     button {
       flex: 1;
       width: 100%;
-      display: flex;
-      height: 50px;
-      flex-direction: column;
-      align-items: center;
+      height: 45px;
+      border-radius: 10px;
+      animation: ${fadeIn} 0.3s ease-in-out;
+
       svg {
-        width: 30px;
-        height: 30px;
+        width: 20px;
+        height: 20px;
       }
+    }
+  }
+
+  .progress {
+    position: absolute;
+    left: 0;
+    top: -10px;
+    .ant-progress-inner,
+    .ant-progress-bg {
+      border-radius: 0;
     }
   }
 

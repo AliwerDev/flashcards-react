@@ -4,7 +4,6 @@ import { LanguageElements } from "src/components/dashboard/language";
 import ProfileItem from "src/components/dashboard/profile-item";
 
 import { GoSidebarCollapse } from "react-icons/go";
-import SimpleBar from "simplebar-react";
 import SidebarContent from "src/components/dashboard/sidebar";
 import { TFunction } from "i18next";
 import ICategory from "src/types/category";
@@ -73,9 +72,9 @@ const DashboardLayout: React.FC<ILayout> = ({ children }) => {
           </Flex>
         </Header>
 
-        <SimpleBar style={{ maxHeight: "calc(100vh - 64px)" }}>
-          <Content className="p-2 sm:p-4 md:p-4">{children}</Content>
-        </SimpleBar>
+        <Content style={{ maxHeight: "calc(100vh - 64px)", minHeight: "calc(100vh - 64px)", overflow: "hidden", position: "relative" }} className="p-2 sm:p-4 md:p-4">
+          {children}
+        </Content>
       </Layout>
     </Layout>
   );

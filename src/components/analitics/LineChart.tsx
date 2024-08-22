@@ -1,56 +1,29 @@
-import { IReview } from "src/types/other";
 import { LineChart as ReLineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
 
 import React, { useEffect, useRef, useState } from "react";
-import { theme as antTheme, Card, Skeleton, Typography } from "antd";
+import { theme as antTheme, Card, Flex, Skeleton, Typography } from "antd";
 import { TFunction } from "i18next";
-import { ICard } from "src/types/card";
 import { t } from "i18next";
 
+type ILine = {
+  name: string;
+  type?: "linear" | "basis" | "monotone" | "step" | "stepAfter";
+  label: string;
+  color: string;
+};
+
 interface LineChartProps {
-  data: IReview[];
-  cards: ICard[];
   t: TFunction;
   title?: string;
   loading?: boolean;
+  lines: ILine[];
+  data: Record<string, any>[];
 }
 
-const LineChart: React.FC<LineChartProps> = ({ data, cards, title, loading }) => {
+const LineChart: React.FC<LineChartProps> = ({ data = [], title, loading, lines }) => {
   const { token } = antTheme.useToken();
-  const datesMap = new Map();
   const cardRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(300);
-
-  // Process data
-  data.forEach((item) => {
-    const date = new Date(item.reviewDate).toLocaleDateString();
-    if (!datesMap.has(date)) {
-      datesMap.set(date, { cr: 0, icr: 0, new: 0 });
-    }
-    const counts = datesMap.get(date);
-    if (item.correct) {
-      counts.cr += 1;
-    } else {
-      counts.icr += 1;
-    }
-  });
-
-  cards.forEach((item) => {
-    const date = new Date(item.createdAt).toLocaleDateString();
-    if (!datesMap.has(date)) {
-      datesMap.set(date, { cr: 0, icr: 0, new: 1 });
-    } else {
-      const dateData = datesMap.get(date);
-      dateData.new += 1;
-    }
-  });
-
-  const values = Array.from(datesMap, ([date, data]) => ({
-    name: date,
-    cr: data.cr,
-    icr: data.icr,
-    new: data.new,
-  }));
 
   const tooltipStyle = { background: token.colorBgBase, boxShadow: token.boxShadow, borderRadius: token.borderRadius, borderColor: token.colorBorder };
 
@@ -58,10 +31,11 @@ const LineChart: React.FC<LineChartProps> = ({ data, cards, title, loading }) =>
     if (active && payload && payload.length) {
       return (
         <div style={tooltipStyle} className="p-1 flex flex-col">
-          <Typography.Text className="text-sm text-center">{label}</Typography.Text>
-          <Typography.Text className="text-sm text-[#1db8f0]">{`New cards: ${payload[0].value}`}</Typography.Text>
-          <Typography.Text className="text-sm" type="success" color="success">{`Correct reviews: ${payload[1].value}`}</Typography.Text>
-          <Typography.Text className="text-sm" type="danger">{`Incorrect reviews: ${payload[2].value}`}</Typography.Text>
+          <Typography.Text className="text-xs text-center">{label}</Typography.Text>
+
+          {lines.map((line, i) => (
+            <Typography.Text key={line.name} style={{ fontSize: "12px", color: line.color }}>{`${line.label}: ${payload[i].value}`}</Typography.Text>
+          ))}
         </div>
       );
     }
@@ -77,10 +51,12 @@ const LineChart: React.FC<LineChartProps> = ({ data, cards, title, loading }) =>
   }, [cardRef]);
 
   return (
-    <Card className="my-5" classNames={{ body: "!p-2" }}>
-      <Typography.Title level={5} className="text-center mt-0 my-3">
-        {title ? title : t("Your statistics")}
-      </Typography.Title>
+    <Card classNames={{ body: "!p-2" }} style={{ minHeight: "350px" }}>
+      <Flex justify="space-between" className="mb-4 px-1">
+        <Typography.Title level={5} className="mt-0">
+          {title ? title : t("Statistics")}
+        </Typography.Title>
+      </Flex>
       <div className="max-w-full overflow-hidden min-h-40" ref={cardRef}>
         {loading ? (
           <Skeleton active />
@@ -88,19 +64,19 @@ const LineChart: React.FC<LineChartProps> = ({ data, cards, title, loading }) =>
           <ReLineChart
             width={width}
             height={300}
-            data={values}
+            data={data}
             margin={{
               left: -20,
               bottom: -10,
             }}
           >
             <CartesianGrid stroke={token.colorTextDisabled} strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
+            <XAxis dataKey="_id" />
             <YAxis />
             <Tooltip content={CustomTooltip} contentStyle={tooltipStyle} />
-            <Line type="linear" dataKey="new" stroke="#1db8f0" activeDot={{ r: 2 }} />
-            <Line type="linear" dataKey="cr" stroke="#49aa19" activeDot={{ r: 2 }} />
-            <Line type="linear" dataKey="icr" stroke="#dc4446" activeDot={{ r: 2 }} />
+            {lines.map((line) => (
+              <Line key={line.name} type={line.type || "monotone"} dataKey={line.name} stroke={line.color} activeDot={{ radius: 0.5 }} dot={false} />
+            ))}
           </ReLineChart>
         )}
       </div>
