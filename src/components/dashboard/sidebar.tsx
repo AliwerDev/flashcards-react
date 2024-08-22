@@ -41,13 +41,14 @@ const SidebarContent = ({ t, closeSidebar, closable = false }: IProps) => {
         <Text type="secondary">{t("Categories")}</Text>
       </Divider>
       <Menu mode={closable ? "inline" : "vertical"} selectedKeys={defaultSelectedKeys} items={menus[1]} onSelect={selectMenuItemHandler} />
-      <div className="px-2 mt-2">
-        <Button onClick={() => creatingBool.onTrue()} className="w-full" icon={<GoPlus />}>
-          {t("Add category")}
-        </Button>
-      </div>
-
-      <AddEditCategoryModal open={creatingBool} t={t} />
+      {menus[1].length < 5 && (
+        <div className="px-2 mt-2">
+          <Button onClick={() => creatingBool.onTrue()} className="w-full" icon={<GoPlus />}>
+            {t("Add category")}
+          </Button>
+        </div>
+      )}
+      <AddEditCategoryModal closeSidebar={closeSidebar} open={creatingBool} t={t} />
     </>
   );
 };

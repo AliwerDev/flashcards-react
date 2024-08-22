@@ -34,7 +34,10 @@ const AnaliticsPage = () => {
         default:
           from = null;
       }
-      if (from) changeFilter("from", from.getTime());
+      if (from) {
+        from.setHours(0, 0, 0, 0);
+        changeFilter("from", from.getTime());
+      }
     },
     [changeFilter]
   );
@@ -78,6 +81,7 @@ const AnaliticsPage = () => {
 const defaultDate = () => {
   const now = new Date();
   now.setDate(now.getDate() - 7);
+  now.setHours(0, 0, 0, 0);
   return now.getTime();
 };
 

@@ -77,11 +77,10 @@ const Page = () => {
     mutationKey: ["add-box"],
     mutationFn: (id: string) => axiosInstance.delete(endpoints.category.delete(id)),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
       message.success(t("successfully_deleted"));
-
       localStorage.setItem("lastpath", paths.dashboard.analytics);
       navigate(paths.dashboard.analytics);
+      queryClient.invalidateQueries({ queryKey: ["categories"], exact: true });
     },
     onError: () => "",
   });
@@ -178,7 +177,7 @@ const Page = () => {
       </motion.div>
       <AddEditCardModal openBool={createEditCardBool} categoryId={categoryId} {...{ boxes, t }} />
       <AddBoxModal categoryId={categoryId} t={t} open={createBoxBool} />
-      <AddEditCategoryModal t={t} open={editCategoryBool} />
+      <AddEditCategoryModal closeSidebar={() => ""} t={t} open={editCategoryBool} />
 
       <ul className="circles">
         <li></li>

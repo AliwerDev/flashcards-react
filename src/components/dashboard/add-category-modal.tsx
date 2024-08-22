@@ -4,21 +4,28 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Flex, Form, Input, message, Modal } from "antd";
 import { TFunction } from "i18next";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { paths } from "src/routes/paths";
+import get from "lodash.get";
 
 type Props = {
   open: BooleanReturnType;
   t: TFunction;
+  closeSidebar: VoidFunction;
 };
 
-const AddEditCategoryModal = ({ open: openBool, t }: Props) => {
+const AddEditCategoryModal = ({ open: openBool, closeSidebar, t }: Props) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [form] = Form.useForm();
 
   const { mutate: onFinish, isPending } = useMutation({
     mutationKey: ["add-category"],
     mutationFn: (data: { title: string }) => (openBool.data ? axiosInstance.put(endpoints.category.edit(openBool?.data?._id), data) : axiosInstance.post(endpoints.category.create, data)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    onSuccess: ({ data }) => {
+      closeSidebar();
+      navigate(paths.dashboard.main(get(data, "_id", "")));
+      queryClient.invalidateQueries({ queryKey: ["categories"], exact: true });
       message.success(openBool.data ? t("successfully_changed") : t("successfully_created"));
       openBool.onFalse();
       form.resetFields();
