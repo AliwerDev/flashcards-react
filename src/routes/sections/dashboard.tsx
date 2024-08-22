@@ -1,10 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { Outlet } from "react-router-dom";
 
 import { AuthGuard } from "src/auth/guard";
-import { SplashScreen } from "src/components/shared/loading-screen";
-// import { storageKey } from "src/config-global";
 
 // ----------------------------------------------------------------------
 
@@ -12,13 +10,13 @@ import { SplashScreen } from "src/components/shared/loading-screen";
 const DashboardLayout = lazy(() => import("src/layouts/dashboard/layout"));
 
 // PAGES
-const IndexPage = lazy(() => import("src/pages/dashboard/page"));
-const ProfilePage = lazy(() => import("src/pages/dashboard/profile/page"));
-const AnalyticsPage = lazy(() => import("src/pages/dashboard/analytics/page"));
-const UsersPage = lazy(() => import("src/pages/dashboard/users/page"));
-const CardsPage = lazy(() => import("src/pages/dashboard/cards/page"));
-const PlayPage = lazy(() => import("src/pages/dashboard/play/page"));
-const MainPage = lazy(() => import("src/pages/dashboard/main/page"));
+import IndexPage from "src/pages/dashboard/page";
+import ProfilePage from "src/pages/dashboard/profile/page";
+import AnalyticsPage from "src/pages/dashboard/analytics/page";
+import UsersPage from "src/pages/dashboard/users/page";
+import CardsPage from "src/pages/dashboard/cards/page";
+import PlayPage from "src/pages/dashboard/play/page";
+import MainPage from "src/pages/dashboard/main/page";
 
 // ----------------------------------------------------------------------
 
@@ -28,13 +26,11 @@ export const dashboardRoutes = [
   {
     path: "dashboard",
     element: (
-      <Suspense fallback={<SplashScreen />}>
-        <AuthGuard>
-          <DashboardLayout>
-            <Outlet />
-          </DashboardLayout>
-        </AuthGuard>
-      </Suspense>
+      <AuthGuard>
+        <DashboardLayout>
+          <Outlet />
+        </DashboardLayout>
+      </AuthGuard>
     ),
     children: [
       {
