@@ -56,7 +56,6 @@ const AddEditCardModal = ({ openBool, t, boxes, categoryId, inPlayPage = false }
     onError: () => "",
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onFinish = (values: any) => {
     if (isJsonUploadBool.value) {
       try {

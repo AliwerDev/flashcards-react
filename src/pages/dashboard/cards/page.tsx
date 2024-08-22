@@ -32,15 +32,15 @@ const CardsPage = () => {
     return filterFunction(cardData?.data, filter.value as Ifilter);
   }, [filter, cardData]);
 
-  const { data } = useQuery({ queryKey: ["boxes", categoryId], queryFn: () => axiosInstance.get(endpoints.box.list(categoryId)), enabled: !isLoadingCards && !isError });
+  const { data, isError: isErrorInBoxes } = useQuery({ queryKey: ["boxes", categoryId], queryFn: () => axiosInstance.get(endpoints.box.list(categoryId)), enabled: !isLoadingCards && !isError });
   const boxes: IBox[] = data?.data || [];
 
   useEffect(() => {
-    if (isError) {
+    if (isError || isErrorInBoxes) {
       localStorage.setItem("lastpath", paths.dashboard.analytics);
       navigate(paths.dashboard.analytics);
     }
-  }, [isError]);
+  }, [isError, isErrorInBoxes]);
 
   return (
     <Styled>

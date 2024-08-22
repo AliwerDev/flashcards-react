@@ -2,7 +2,7 @@ import { IBox } from "src/types/box";
 import { HiOutlineTrash } from "react-icons/hi2";
 import axiosInstance, { endpoints } from "src/utils/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Col, Flex, message, Popconfirm, Row, Skeleton, Space, theme, Typography } from "antd";
+import { Badge, Button, Col, Flex, message, Modal, Popconfirm, Row, Skeleton, Space, theme, Typography } from "antd";
 import { IoReload } from "react-icons/io5";
 import { useBoolean } from "src/hooks/use-boolean";
 import AddBoxModal from "src/components/dashboard/add-box-modal";
@@ -19,7 +19,7 @@ import AddEditCategoryModal from "src/components/dashboard/add-category-modal";
 import get from "lodash.get";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 const { Text, Title } = Typography;
 
@@ -49,14 +49,15 @@ const Page = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const categoryId = params.categoryId as string;
+  const [modal, contextHolder] = Modal.useModal();
 
   const createBoxBool = useBoolean();
   const editCategoryBool = useBoolean();
   const createEditCardBool = useBoolean();
 
   const { data, isLoading: isFetchingBoxes, isError } = useQuery({ queryKey: ["boxes-with-count", categoryId], queryFn: () => axiosInstance.get(endpoints.box.listWithCardCount(categoryId)) });
-  const { data: activeCardsData } = useQuery({ queryKey: ["active-cards", categoryId], queryFn: () => axiosInstance.get(endpoints.card.getActive(categoryId)), enabled: !isFetchingBoxes && !isError });
   const { data: category } = useQuery({ queryKey: ["categories", categoryId], queryFn: () => axiosInstance.get(endpoints.category.getOne(categoryId)), enabled: !isFetchingBoxes && !isError });
+  const { data: activeCardsData } = useQuery({ queryKey: ["active-cards", categoryId], queryFn: () => axiosInstance.get(endpoints.card.getActive(categoryId)), enabled: !isFetchingBoxes && !isError });
 
   const boxes: IBox[] = data?.data || [];
   const active_cards: ICard[] = activeCardsData?.data || [];
@@ -85,6 +86,21 @@ const Page = () => {
     onError: () => "",
   });
 
+  const confirmDeleteCategory = useCallback(
+    (categoryId: string) => {
+      modal.confirm({
+        title: t("are-you-sure-you-want-to-delete-this-category"),
+        content: t("by-deleting-the-category-all-relevant-boxes-and-cards-will-be-deleted"),
+        okText: t("Yes"),
+        cancelText: t("No"),
+        onOk() {
+          removeCategory(categoryId);
+        },
+      });
+    },
+    [modal]
+  );
+
   useEffect(() => {
     if (isError) {
       localStorage.setItem("lastpath", paths.dashboard.analytics);
@@ -102,11 +118,10 @@ const Page = () => {
 
   return (
     <Styled>
+      {contextHolder}
       <Space className="absolute top-4 right-4">
         <Button onClick={() => editCategoryBool.onTrue(get(category, "data"))} type="dashed" icon={<LuPencil />} />
-        <Popconfirm placement="bottomLeft" description={t("By deleting the category, all relevant boxes and cards will be deleted")} title={t("Are you sure to delete this category?")} onConfirm={() => removeCategory(categoryId)} okText={t("Yes")} cancelText={t("No")}>
-          <Button danger type="dashed" icon={<LuTrash />} />
-        </Popconfirm>
+        <Button onClick={() => confirmDeleteCategory(categoryId)} danger type="dashed" icon={<LuTrash />} />
       </Space>
 
       <motion.div className="content" initial="hidden" animate="visible" variants={container}>

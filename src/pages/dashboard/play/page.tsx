@@ -46,7 +46,7 @@ const PlayPage = () => {
   const { startConfetti, isPlaying } = useConfetti();
 
   const { data: active_cards_data, isLoading, isError } = useQuery({ queryKey: ["active-cards", categoryId], queryFn: () => axiosInstance.get(endpoints.card.getActive(categoryId)) });
-  const { data: boxesData } = useQuery({ queryKey: ["boxes", categoryId], queryFn: () => axiosInstance.get(endpoints.box.list(categoryId)), enabled: !isLoading && !isError && !isAll });
+  const { data: boxesData, isError: isErrorInBoxes } = useQuery({ queryKey: ["boxes", categoryId], queryFn: () => axiosInstance.get(endpoints.box.list(categoryId)), enabled: !isLoading && !isError && !isAll });
   const { data: categoriesData } = useQuery({ queryKey: ["categories"], queryFn: () => axiosInstance.get(endpoints.category.list) });
 
   const active_cards: ICard[] = active_cards_data?.data || [];
@@ -105,11 +105,11 @@ const PlayPage = () => {
   const style = { background: token.colorBgContainer };
 
   useEffect(() => {
-    if (isError) {
+    if (isError || isErrorInBoxes) {
       localStorage.setItem("lastpath", paths.dashboard.analytics);
       navigate(paths.dashboard.analytics);
     }
-  }, [isError]);
+  }, [isError, isErrorInBoxes]);
 
   useEffect(() => {
     if (active_cards.length > 0) {
@@ -181,7 +181,7 @@ const PlayPage = () => {
             description={
               <div className="flex flex-col items-center">
                 <Typography.Text type="secondary">{t("you-have-completed-all-active-cards")}</Typography.Text>
-                <Button href={paths.dashboard.main(categoryId)} icon={<LuMoveLeft />} type="link">
+                <Button href={isAll ? paths.dashboard.analytics : paths.dashboard.main(categoryId)} icon={<LuMoveLeft />} type="link">
                   {t("back-to-home")}
                 </Button>
               </div>
