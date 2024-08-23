@@ -1,5 +1,5 @@
-import React, { ReactNode, useEffect } from "react";
 import { Breadcrumb, Button, Drawer, Flex, Layout, theme } from "antd";
+import React, { ReactNode, useEffect } from "react";
 import { LanguageElements } from "src/components/dashboard/language";
 import ProfileItem from "src/components/dashboard/profile-item";
 
@@ -63,7 +63,7 @@ const DashboardLayout: React.FC<ILayout> = ({ children }) => {
       <Layout>
         <Header className="px-3 flex justify-between items-center" style={{ background: colorBgContainer }}>
           <Flex align="center" gap={5}>
-            <Button type="text" className="flex md:hidden" onClick={sidebarBool.onToggle} icon={<GoSidebarCollapse className="text-lg" />} />
+            <Button type="text" className="flex " onClick={sidebarBool.onToggle} icon={<GoSidebarCollapse className="text-lg" />} />
             <Breadcrumb items={breadcrumbItems} />
           </Flex>
           <Flex gap="15px" align="center">
