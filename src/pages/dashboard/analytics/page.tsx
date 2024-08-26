@@ -3,7 +3,7 @@ import ReviewsPieChart from "src/components/analitics/ReviewsPieChart";
 import axiosInstance, { endpoints } from "src/utils/axios";
 import { useQuery } from "@tanstack/react-query";
 
-import { Col, Row, Select, Typography } from "antd";
+import { Col, Row, Select, theme, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 import SimpleBar from "simplebar-react";
 import get from "lodash.get";
@@ -14,6 +14,8 @@ const AnaliticsPage = () => {
   const { t } = useTranslation();
   const { value: filter, changeFilter } = useFilter({ from: defaultDate() });
   const { data, isLoading } = useQuery({ queryKey: ["statistics", filter.from], queryFn: () => axiosInstance.get(endpoints.statistics.root, { params: { from: filter.from } }) });
+
+  const { token } = theme.useToken();
 
   const handleChange = useCallback(
     (value: string) => {
@@ -43,7 +45,7 @@ const AnaliticsPage = () => {
   );
 
   return (
-    <SimpleBar style={{ maxHeight: "100%", width: "100%" }}>
+    <SimpleBar color={token.colorBgContainer} style={{ maxHeight: "100%", width: "100%" }}>
       <Row gutter={[15, 15]} className="w-full">
         <Col xs={24} className="flex justify-between">
           <Typography.Title level={4} className="mt-0">
@@ -54,12 +56,6 @@ const AnaliticsPage = () => {
             <Select.Option value="monthly">{t("monthly")}</Select.Option>
             <Select.Option value="yearly">{t("yearly")}</Select.Option>
           </Select>
-        </Col>
-        <Col xs={24} lg={16}>
-          <LineChart lines={[{ name: "count", color: "#1db8f0", label: t("new-cards-count"), type: "step" }]} loading={isLoading} title={t("new-cards")} t={t} data={get(data, "data.newcards", [])} />
-        </Col>
-        <Col xs={24} lg={8}>
-          <ReviewsPieChart loading={isLoading} title={t("all-reviews")} t={t} data={get(data, "data.reviews", [])} />
         </Col>
         <Col xs={24}>
           <LineChart
@@ -72,6 +68,12 @@ const AnaliticsPage = () => {
             t={t}
             data={get(data, "data.reviews", [])}
           />
+        </Col>
+        <Col xs={24} lg={16}>
+          <LineChart lines={[{ name: "count", color: "#1db8f0", label: t("new-cards-count"), type: "step" }]} loading={isLoading} title={t("new-cards")} t={t} data={get(data, "data.newcards", [])} />
+        </Col>
+        <Col xs={24} lg={8}>
+          <ReviewsPieChart loading={isLoading} title={t("all-reviews")} t={t} data={get(data, "data.reviews", [])} />
         </Col>
       </Row>
     </SimpleBar>

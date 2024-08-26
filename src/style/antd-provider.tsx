@@ -15,8 +15,9 @@ const colors = {
     colorSuccess: "#53c61b",
     colorPrimary: "#52c41a",
     colorInfo: "#13c2c2",
-    colorBgBase: "#000000",
-    borderRadius: 4,
+    colorBgContainer: "#203A43",
+    colorBgBase: "#0F2027",
+    borderRadius: 10,
     wireframe: false,
   },
   light: {
@@ -24,7 +25,7 @@ const colors = {
     colorPrimary: "#52c41a",
     colorInfo: "#13c2c2",
     colorBgBase: "#f3f5f1",
-    borderRadius: 4,
+    borderRadius: 10,
     wireframe: false,
   },
 };
@@ -36,7 +37,7 @@ const AntdProvider = ({ children }: Props) => {
 
   return (
     <ConfigProvider
-      locale={lang === "en" ? en_US : ru_RU}
+      locale={lang === "ru" ? ru_RU : en_US}
       theme={{
         token: isDarkMode ? colors.dark : colors.light,
         algorithm: isDarkMode ? [theme.darkAlgorithm] : [theme.defaultAlgorithm],

@@ -52,14 +52,14 @@ const Profile: React.FC = () => {
           </Col>
           <Col xs={24} sm={12} md={24} lg={16}>
             <Card>
-              <Form.Item label="First Name" name="firstName" rules={[{ required: true, message: "Please input your first name!" }]}>
+              <Form.Item label={t("first-name")} name="firstName" rules={[{ required: true, message: "Please input your first name!" }]}>
                 <Input />
               </Form.Item>
-              <Form.Item label="Last Name" name="lastName" rules={[{ required: true, message: "Please input your last name!" }]}>
+              <Form.Item label={t("last-name")} name="lastName" rules={[{ required: true, message: "Please input your last name!" }]}>
                 <Input />
               </Form.Item>
-              <Form.Item label="Email" name="email">
-                <Input readOnly />
+              <Form.Item label={t("email")} name="email">
+                <Input className="cursor-not-allowed" readOnly />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-between w-full">

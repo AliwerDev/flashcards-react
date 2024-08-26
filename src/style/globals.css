@@ -58,3 +58,20 @@ input:-webkit-autofill {
     color: #53c61b !important;
   }
 }
+
+.main-sidebar {
+  .ant-layout-sider-children {
+    overflow-y: auto;
+    padding-bottom: 20px;
+  }
+  .ant-menu-root {
+    border-inline-end: none !important;
+  }
+}
+
+aside {
+  border-radius: 0 !important;
+  .simplebar-track .simplebar-scrollbar::before {
+    background-color: #2a596d !important;
+  }
+}

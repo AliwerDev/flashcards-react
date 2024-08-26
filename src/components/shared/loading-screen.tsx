@@ -3,6 +3,8 @@ import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 import logo from "src/assets/logo/flashcards.svg";
 import logoCard from "src/assets/logo/card.png";
+import { useBoolean } from "src/hooks/use-boolean";
+import { useEffect } from "react";
 
 const cardAnimation = keyframes`
   0% {
@@ -34,13 +36,21 @@ const cardAnimation2 = keyframes`
   }
 `;
 
-const Styled = styled.div`
+interface IProps {
+  loading: boolean;
+}
+
+const Styled = styled.div<IProps>`
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 10000;
+  display: ${({ loading }) => (loading ? "flex" : "none")};
 
   .logo {
     display: flex;
@@ -70,12 +80,21 @@ const Styled = styled.div`
   }
 `;
 
-export const SplashScreen = () => {
+export const SplashScreen = ({ loading }: IProps) => {
+  const isloading = useBoolean(true);
+
+  useEffect(() => {
+    if (!loading) {
+      setTimeout(() => isloading.onFalse(), 500);
+    }
+  }, [loading]);
+
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
   return (
-    <Styled style={{ backgroundColor: colorBgContainer }}>
+    <Styled loading={isloading.value} style={{ backgroundColor: colorBgContainer }}>
       <div className="logo">
         <div className="logo-cards">
           <img src={logoCard} className="logo-cards-item" />

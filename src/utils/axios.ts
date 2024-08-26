@@ -58,6 +58,7 @@ export const endpoints = {
     getActive: (categoryId: string) => `/card/active/${categoryId}`,
     edit: (id: string) => `/card/${id}`,
     delete: (id: string) => `/card/${id}`,
+    deleteList: "/card",
     getOne: (id: string) => `/card/${id}`,
   },
   box: {
