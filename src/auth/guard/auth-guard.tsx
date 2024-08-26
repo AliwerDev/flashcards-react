@@ -13,33 +13,34 @@ type Props = {
 
 export default function AuthGuard({ children }: Props) {
   const { loading } = useAuthContext();
-  return <>{loading ? <SplashScreen /> : <Container>{children}</Container>}</>;
+
+  return (
+    <Container>
+      <SplashScreen loading={loading} />
+      {children}
+    </Container>
+  );
 }
 
 // ----------------------------------------------------------------------
 
 function Container({ children }: Props) {
-  const { authenticated } = useAuthContext();
+  const { authenticated, loading } = useAuthContext();
 
   const [checked, setChecked] = useState(false);
   const navigate = useNavigate();
 
   const check = useCallback(() => {
     if (!authenticated) {
-      const searchParams = new URLSearchParams({
-        returnTo: window.location.pathname,
-      }).toString();
-
-      const href = `${paths.auth.login}?${searchParams}`;
-      navigate(href, { replace: true });
+      navigate(paths.auth.login, { replace: true });
     } else {
       setChecked(true);
     }
   }, [authenticated, navigate]);
 
   useEffect(() => {
-    check();
-  }, [authenticated, check]);
+    if (!loading) check();
+  }, [authenticated, check, loading]);
 
   if (!checked) {
     return null;

@@ -54,7 +54,7 @@ const DashboardLayout: React.FC<ILayout> = ({ children }) => {
         }}
         width={250}
         onCollapse={sidebarBool.onToggle}
-        className="hidden md:block"
+        className="hidden md:block main-sidebar"
         trigger={null}
         zeroWidthTriggerStyle={{ background: colorBgContainer }}
       >

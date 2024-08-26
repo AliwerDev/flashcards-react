@@ -1,5 +1,3 @@
-import { paths } from "./routes/paths";
-
 // API
 export const HOST_API = import.meta.env.VITE_HOST_API;
 export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -12,6 +10,3 @@ export const storageKey = {
   CATEGORIES: "categories",
   LAST_PATH: "lastpath",
 };
-
-// ROOT PATH AFTER LOGIN SUCCESSFUL
-export const PATH_AFTER_LOGIN = paths.dashboard.root;

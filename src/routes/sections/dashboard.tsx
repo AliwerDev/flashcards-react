@@ -10,7 +10,6 @@ import { AuthGuard } from "src/auth/guard";
 const DashboardLayout = lazy(() => import("src/layouts/dashboard/layout"));
 
 // PAGES
-import IndexPage from "src/pages/dashboard/page";
 import ProfilePage from "src/pages/dashboard/profile/page";
 import AnalyticsPage from "src/pages/dashboard/analytics/page";
 import UsersPage from "src/pages/dashboard/users/page";
@@ -33,10 +32,6 @@ export const dashboardRoutes = [
       </AuthGuard>
     ),
     children: [
-      {
-        index: true,
-        element: <IndexPage />,
-      },
       {
         path: "profile",
         element: <ProfilePage />,

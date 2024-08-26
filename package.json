@@ -40,6 +40,7 @@
     "lodash.get": "^4.4.2",
     "lodash.isarray": "^4.0.0",
     "lodash.isempty": "^4.4.0",
+    "quill": "^2.0.2",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-confetti": "^6.1.0",
@@ -58,6 +59,7 @@
   "devDependencies": {
     "@eslint/js": "^9.9.0",
     "@types/node": "^20",
+    "@types/quill": "^2.0.14",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/react-router-dom": "^5.3.3",

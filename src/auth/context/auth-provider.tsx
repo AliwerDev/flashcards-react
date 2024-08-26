@@ -81,7 +81,6 @@ export function AuthProvider({ children }: Props) {
       if (accessToken) {
         setStorage(accessToken);
         const res = await axios.get(endpoints.user.me);
-
         dispatch({
           type: Types.INITIAL,
           payload: {

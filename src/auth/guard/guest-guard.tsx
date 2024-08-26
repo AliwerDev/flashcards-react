@@ -3,7 +3,8 @@ import { useEffect, useCallback } from "react";
 import { paths } from "src/routes/paths";
 import { useAuthContext } from "../hooks";
 import { SplashScreen } from "src/components/shared/loading-screen";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { storageKey } from "src/config-global";
 
 // ----------------------------------------------------------------------
 
@@ -14,23 +15,31 @@ type Props = {
 export default function GuestGuard({ children }: Props) {
   const { loading } = useAuthContext();
 
-  return <>{loading ? <SplashScreen /> : <Container>{children}</Container>}</>;
+  return (
+    <Container>
+      <SplashScreen loading={loading} />
+      {children}
+    </Container>
+  );
 }
 
 // ----------------------------------------------------------------------
 
 function Container({ children }: Props) {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
-  const returnTo = searchParams.get("returnTo") || paths.dashboard.root;
   const { authenticated } = useAuthContext();
 
   const check = useCallback(() => {
     if (authenticated) {
-      navigate(returnTo, { replace: true });
+      const path = localStorage.getItem(storageKey.LAST_PATH);
+      if (path) {
+        navigate(path);
+      } else {
+        navigate(paths.dashboard.main("ALL"));
+      }
     }
-  }, [authenticated, returnTo, navigate]);
+  }, [authenticated, navigate]);
 
   useEffect(() => {
     check();
